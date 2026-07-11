@@ -1,0 +1,3 @@
+CC 1 en la NC funciona para cambiar parametros, esto funciona por preset.
+Entonces por ejemplo puede tener en el preset uno configurado para que lo que se cambie se el gain del overdrive.
+Esto me permite tener el footswitch dos para enviar poco gain y el footwstich 3 para enviar mas gain al overdrive.
