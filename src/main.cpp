@@ -1,71 +1,77 @@
 #include <Arduino.h>
+
 #include "MidiOut.h"
-#include "ActionManager.h"
-#include "ToggleCCAction.h"
-#include "ChangeCCAction.h"
-#include "ToggleMacroAction.h"
 #include "Footswitch.h"
 
-int MIDI_CHANNEL = 1;
+#include "UsbConfigServer.h"
+#include "DeviceConfigManager.h"
 
-Button button1(18);
-Button button2(19);
+#include "ConfigurableMacroAction.h"
 
-Led led1(25);
-Led led2(26);
+Button button1(23);
+Button button2(22);
+Button button3(18);
+Button button4(19);
+Button button5(21);
+
+Led led1(32);
+Led led2(33);
+Led led3(25);
+Led led4(26);
+Led led5(27);
+
+UsbConfigServer usbConfigServer;
+
+DeviceConfigManager configManager;
 
 MidiOut midi;
-ActionManager actionManager;
 
-ToggleCCAction preFx1(midi, 37);  // Compressor. Olways on.
-ToggleCCAction preFx2(midi, 38);  // OD
-ToggleCCAction postFx1(midi, 39); // Modulation
-ToggleCCAction postFx2(midi, 40); // Delay
-ToggleCCAction postFx3(midi, 41); // Reverb
-ChangeCCAction changeFx(midi, 1);
+DeviceConfig *config;
 
-// Boost
-ChangeCCAction enableFx1(midi, 38, 127);
-ChangeCCAction disableFx1(midi, 38, 0);
-ChangeCCAction setBoost(midi, 1, 25);
-ToggleMacroAction preFx2Boost;
+ConfigurableMacroAction action1(midi);
+ConfigurableMacroAction action2(midi);
+ConfigurableMacroAction action3(midi);
+ConfigurableMacroAction action4(midi);
+ConfigurableMacroAction action5(midi);
 
-// Lead
-ChangeCCAction enableFx2(midi, 38, 127);
-ChangeCCAction disableFx2(midi, 38, 0);
-ChangeCCAction setLeadGain(midi, 1, 64);
-ToggleMacroAction preFx2LeadGain;
-
-Footswitch fs1(button1, led1, preFx2Boost);
-Footswitch fs2(button2, led2, preFx2LeadGain);
+Footswitch fs1(button1, led1, action1);
+Footswitch fs2(button2, led2, action2);
+Footswitch fs3(button3, led3, action3);
+Footswitch fs4(button4, led4, action4);
+Footswitch fs5(button5, led5, action5);
 
 void setup()
 {
-  Serial.begin(115200);
+  configManager.begin();
+
+  config = configManager.getConfig();
+
+  usbConfigServer.begin(&configManager);
+
   midi.begin();
 
-  actionManager.assignAction(0, &preFx1);
-  actionManager.assignAction(1, &preFx2);
-  actionManager.assignAction(2, &postFx1);
-  actionManager.assignAction(3, &postFx2);
-  actionManager.assignAction(4, &postFx3);
-
-  preFx2Boost.addOnAction(&enableFx1);
-  preFx2Boost.addOnAction(&setBoost);
-  preFx2Boost.addOffAction(&disableFx1);
-
-  preFx2LeadGain.addOnAction(&enableFx2);
-  preFx2LeadGain.addOnAction(&setLeadGain);
-  preFx2LeadGain.addOffAction(&disableFx2);
+  action1.begin(config->footswitches[0]);
+  action2.begin(config->footswitches[1]);
+  action3.begin(config->footswitches[2]);
+  action4.begin(config->footswitches[3]);
+  action5.begin(config->footswitches[4]);
 
   fs1.begin();
   fs2.begin();
+  fs3.begin();
+  fs4.begin();
+  fs5.begin();
 
   Serial.println("Start...");
 }
 
 void loop()
 {
+  usbConfigServer.loop();
+
   fs1.update();
   fs2.update();
+  fs3.update();
+  fs4.update();
+  fs5.update();
 }
