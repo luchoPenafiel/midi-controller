@@ -132,6 +132,14 @@ bool DeviceConfigManager::setConfigFromJson(
             name,
             MAX_NAME_LENGTH - 1);
 
+        newConfig.footswitches[i].isScene = false;
+
+        if (fs["isScene"].is<bool>())
+        {
+            newConfig.footswitches[i].isScene =
+                fs["isScene"].as<bool>();
+        }
+
         if (!parseActions(
                 fs["onActions"].as<JsonArray>(),
                 newConfig.footswitches[i].onActions,

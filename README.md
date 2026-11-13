@@ -5,7 +5,8 @@ A configurable MIDI footswitch controller built on the ESP32. Five footswitches 
 ## Features
 
 - **5 footswitches** with dedicated buttons and status LEDs
-- **Toggle behavior** — each press alternates between _on_ and _off_ action sets
+- **Toggle behavior** — each press alternates between _on_ and _off_ action sets (non-scene footswitches)
+- **Scenes** — optional per footswitch; at most one scene on at a time; switching runs other scenes’ `offActions` before the new scene’s `onActions`
 - **Macro actions** — up to 10 CC messages per state (on/off) per footswitch
 - **Persistent config** — settings saved in ESP32 NVS (survives power cycles)
 - **USB configuration** — read and update the full device config over serial
@@ -86,6 +87,7 @@ Responds with `OK` on success or `ERROR` on invalid JSON or out-of-range values.
   "footswitches": [
     {
       "name": "Boost",
+      "isScene": false,
       "onActions": [
         { "cc": 38, "value": 127 },
         { "cc": 1, "value": 25 }
@@ -101,6 +103,7 @@ Responds with `OK` on success or `ERROR` on invalid JSON or out-of-range values.
 | `midiChannel`  | MIDI channel (1–16)                            |
 | `footswitches` | Array of up to 5 footswitch configs            |
 | `name`         | Label (max 32 characters)                      |
+| `isScene`      | When true, footswitch participates in scene mutual exclusion (default `false`) |
 | `onActions`    | CC messages sent when the footswitch turns on  |
 | `offActions`   | CC messages sent when the footswitch turns off |
 
@@ -114,6 +117,7 @@ On first boot (or when no saved config exists), the device loads sensible defaul
 src/
   main.cpp                 # Entry point, hardware wiring
   Footswitch.cpp           # Button + LED + action orchestration
+  FootswitchBank.cpp       # Scene selection and mutual exclusion
   ConfigurableMacroAction  # Toggle CC macro execution
   DeviceConfigManager.cpp  # NVS persistence and JSON parsing
   UsbConfigServer.cpp      # Serial config protocol

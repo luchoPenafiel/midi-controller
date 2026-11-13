@@ -16,6 +16,8 @@ struct FootswitchConfig
 {
   char name[MAX_NAME_LENGTH];
 
+  bool isScene;
+
   MidiCCAction onActions[MAX_ACTIONS_PER_STATE];
   uint8_t onActionCount;
 

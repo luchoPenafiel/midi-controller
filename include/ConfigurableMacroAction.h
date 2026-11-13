@@ -16,6 +16,12 @@ public:
 
   void execute() override;
 
+  void activate() override;
+
+  void deactivate() override;
+
+  bool isActive() const override;
+
 private:
   MidiOut &_midi;
 
