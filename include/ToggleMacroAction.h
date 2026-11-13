@@ -15,6 +15,12 @@ public:
 
   void execute() override;
 
+  void activate() override;
+
+  void deactivate() override;
+
+  bool isActive() const override;
+
 private:
   static constexpr uint8_t MAX_ACTIONS = 8;
 

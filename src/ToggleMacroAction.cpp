@@ -32,21 +32,47 @@ void ToggleMacroAction::addOffAction(Action *action)
 
 void ToggleMacroAction::execute()
 {
-  if (!_enabled)
+  if (_enabled)
   {
-    for (uint8_t i = 0; i < _onCount; i++)
-    {
-      _onActions[i]->execute();
-    }
-    _enabled = true;
+    deactivate();
   }
   else
   {
-    for (uint8_t i = 0; i < _offCount; i++)
-    {
-      _offActions[i]->execute();
-    }
-
-    _enabled = false;
+    activate();
   }
+}
+
+void ToggleMacroAction::activate()
+{
+  if (_enabled)
+  {
+    return;
+  }
+
+  for (uint8_t i = 0; i < _onCount; i++)
+  {
+    _onActions[i]->execute();
+  }
+
+  _enabled = true;
+}
+
+void ToggleMacroAction::deactivate()
+{
+  if (!_enabled)
+  {
+    return;
+  }
+
+  for (uint8_t i = 0; i < _offCount; i++)
+  {
+    _offActions[i]->execute();
+  }
+
+  _enabled = false;
+}
+
+bool ToggleMacroAction::isActive() const
+{
+  return _enabled;
 }

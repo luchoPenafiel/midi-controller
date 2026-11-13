@@ -16,27 +16,47 @@ void ConfigurableMacroAction::begin(
 
 void ConfigurableMacroAction::execute()
 {
-  if (_config == nullptr)
+  if (_enabled)
+  {
+    deactivate();
+  }
+  else
+  {
+    activate();
+  }
+}
+
+void ConfigurableMacroAction::activate()
+{
+  if (_config == nullptr || _enabled)
   {
     return;
   }
 
-  if (!_enabled)
-  {
-    executeActions(
-        _config->onActions,
-        _config->onActionCount);
+  executeActions(
+      _config->onActions,
+      _config->onActionCount);
 
-    _enabled = true;
-  }
-  else
-  {
-    executeActions(
-        _config->offActions,
-        _config->offActionCount);
+  _enabled = true;
+}
 
-    _enabled = false;
+void ConfigurableMacroAction::deactivate()
+{
+  if (_config == nullptr || !_enabled)
+  {
+    return;
   }
+
+  executeActions(
+      _config->offActions,
+      _config->offActionCount);
+
+  _enabled = false;
+}
+
+bool ConfigurableMacroAction::isActive() const
+{
+  return _enabled;
 }
 
 void ConfigurableMacroAction::executeActions(

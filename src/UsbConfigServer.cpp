@@ -99,7 +99,9 @@ void UsbConfigServer::sendFootswitchConfig(
   Serial.print("{");
   Serial.print("\"name\":\"");
   Serial.print(footswitch.name);
-  Serial.print("\",\"onActions\":[");
+  Serial.print("\",\"isScene\":");
+  Serial.print(footswitch.isScene ? "true" : "false");
+  Serial.print(",\"onActions\":[");
 
   for (
       uint8_t i = 0;

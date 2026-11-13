@@ -2,6 +2,7 @@
 
 #include "MidiOut.h"
 #include "Footswitch.h"
+#include "FootswitchBank.h"
 
 #include "UsbConfigServer.h"
 #include "DeviceConfigManager.h"
@@ -40,6 +41,8 @@ Footswitch fs3(button3, led3, action3);
 Footswitch fs4(button4, led4, action4);
 Footswitch fs5(button5, led5, action5);
 
+FootswitchBank footswitchBank;
+
 void setup()
 {
   configManager.begin();
@@ -56,11 +59,19 @@ void setup()
   action4.begin(config->footswitches[3]);
   action5.begin(config->footswitches[4]);
 
-  fs1.begin();
-  fs2.begin();
-  fs3.begin();
-  fs4.begin();
-  fs5.begin();
+  footswitchBank.begin(config);
+
+  footswitchBank.registerFootswitch(&fs1, 0);
+  footswitchBank.registerFootswitch(&fs2, 1);
+  footswitchBank.registerFootswitch(&fs3, 2);
+  footswitchBank.registerFootswitch(&fs4, 3);
+  footswitchBank.registerFootswitch(&fs5, 4);
+
+  fs1.begin(&config->footswitches[0], &footswitchBank, 0);
+  fs2.begin(&config->footswitches[1], &footswitchBank, 1);
+  fs3.begin(&config->footswitches[2], &footswitchBank, 2);
+  fs4.begin(&config->footswitches[3], &footswitchBank, 3);
+  fs5.begin(&config->footswitches[4], &footswitchBank, 4);
 
   Serial.println("Start...");
 }
@@ -69,9 +80,5 @@ void loop()
 {
   usbConfigServer.loop();
 
-  fs1.update();
-  fs2.update();
-  fs3.update();
-  fs4.update();
-  fs5.update();
+  footswitchBank.update();
 }
